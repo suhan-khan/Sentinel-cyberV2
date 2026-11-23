@@ -1,0 +1,8 @@
+uploads/*
+!uploads/.gitkeep
+__pycache__/
+.venv/
+venv/
+.env
+.env.*
+!.env.example

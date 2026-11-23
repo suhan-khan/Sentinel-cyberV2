@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+backend/uploads/*
+!backend/uploads/.gitkeep
+# Local AI agent files
+.claude/
+
+# Temporary notebook dump
+nb_dump.txt

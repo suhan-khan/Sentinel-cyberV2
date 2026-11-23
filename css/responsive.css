@@ -1,0 +1,280 @@
+/* ==========================================================================
+   Sentinel Cyber — responsive.css
+   Responsive breakpoints and mobile layouts for SOC Dashboard
+   ========================================================================== */
+
+/* --- Breakpoint: 1200px --- */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .telemetry-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .system-health-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Breakpoint: 992px --- */
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: var(--sidebar-width);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .mobile-overlay.active {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .topbar {
+    left: 0;
+  }
+
+  #sidebar-toggle {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .telemetry-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .traffic-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .threat-stats,
+  .prediction-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-row,
+  .dashboard-row-equal {
+    grid-template-columns: 1fr;
+  }
+
+  .search-input {
+    width: 160px;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
+
+/* --- Breakpoint: 768px --- */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .telemetry-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .system-health-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-bar select,
+  .filter-bar input[type="text"] {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .traffic-stats {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .threat-stats,
+  .prediction-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .page-section {
+    padding: 16px;
+  }
+
+  .topbar {
+    padding: 0 16px;
+  }
+
+  .search-input {
+    width: 140px;
+  }
+
+  .settings-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .settings-row input[type="text"],
+  .settings-row input[type="url"],
+  .settings-row select {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .table-pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card-header {
+    padding: 12px 16px;
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .time-filter-group {
+    flex-wrap: wrap;
+  }
+
+  .dashboard-row,
+  .dashboard-row-equal {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .upload-zone {
+    padding: 32px 16px;
+  }
+}
+
+/* --- Breakpoint: 576px --- */
+@media (max-width: 576px) {
+  .stats-grid,
+  .traffic-stats,
+  .threat-stats,
+  .prediction-stats,
+  .system-health-grid,
+  .telemetry-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .page-section {
+    padding: 12px;
+  }
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .page-title {
+    font-size: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+  }
+
+  .mini-stat-card .mini-stat-value {
+    font-size: 1.15rem;
+  }
+
+  .mini-stat-card .mini-stat-label {
+    font-size: 0.7rem;
+  }
+
+  .data-table th {
+    font-size: 0.7rem;
+    padding: 8px 10px;
+  }
+
+  .data-table td {
+    font-size: 0.78rem;
+    padding: 8px 10px;
+  }
+
+  .btn {
+    min-height: 40px;
+    padding: 9px 14px;
+  }
+
+  .btn-sm {
+    min-height: 32px;
+    padding: 5px 10px;
+  }
+
+  .search-input {
+    display: none;
+  }
+
+  .system-status span:not(.status-dot) {
+    display: none;
+  }
+
+  .notification-toast-container {
+    top: 72px;
+    right: 12px;
+    width: calc(100vw - 24px);
+  }
+
+  .upload-zone {
+    padding: 24px 12px;
+  }
+
+  .chart-container {
+    min-height: 220px;
+  }
+
+  .analytics-grid .card {
+    min-height: 280px;
+  }
+
+  .file-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
