@@ -1,145 +1,293 @@
-# Sentinel Cyber — AI-Powered Security Operations Center (SOC) & NIDS
+# Sentinel Cyber V2 — AI-Powered Security Operations Center (SOC)
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.4+-F7931E.svg?logo=scikit-learn)](https://scikit-learn.org)
-[![Theme](https://img.shields.io/badge/Theme-Dark%20Navy%20%26%20Electric%20Blue-00E5FF.svg)](#)
-[![Deployment](https://img.shields.io/badge/Deploy-Render%20%7C%20Vercel-3B82F6.svg)](#)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi)
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Random%20Forest-F7931E?logo=scikit-learn)
+![Frontend](https://img.shields.io/badge/Frontend-HTML%20%7C%20CSS%20%7C%20JavaScript-orange)
+![Deployment](https://img.shields.io/badge/Deployment-Vercel%20%7C%20Render-3B82F6)
 
-Sentinel Cyber is an enterprise-grade Security Operations Center (SOC) dashboard and AI-based Network Intrusion Detection System (NIDS). It integrates live host interface telemetry with a pre-trained Random Forest model trained on the CIC-IDS2017 benchmark dataset to identify malicious ingress vectors (DoS, DDoS, Port Probing, Brute Force Authentication, and Exploits).
+**Sentinel Cyber V2** is a web-based Security Operations Center (SOC) dashboard designed to monitor network activity, visualize security telemetry, and support machine-learning-based network intrusion detection.
 
----
+The project combines a responsive cybersecurity dashboard, a FastAPI backend, a Windows host telemetry sensor, and a pre-trained Random Forest model based on the CIC-IDS2017 feature schema.
 
-## 🛡️ Key Features
+The current implementation supports live host-level network telemetry from a connected Windows machine. Real-time packet-level flow extraction and live ML inference are planned development milestones.
 
-- **Professional SOC Dashboard Theme**:
-  - Engineered with a deep navy palette (`#070B14`, `#10192E`), electric blue accents (`#3B82F6`), and cyber cyan glow (`#00E5FF`).
-  - High-contrast responsive data tables, KPI metrics with CSS animations, and Chart.js telemetry visualizations.
-- **Dual-Environment Architecture (Localhost & Render)**:
-  - **Local Development**: Seamlessly connects to `http://localhost:8000` when running locally or via `file://`.
-  - **Production Deployment**: Connects to the Render HTTPS backend (`https://sentinel-cyber.onrender.com`) when deployed on Vercel.
-  - Zero hardcoded domain lock-in with one-click environment presets in Settings.
-- **Live Windows Host Telemetry**:
-  - Live sensor daemon (`windows_monitor.py`) streams interface counters and active sockets (TCP, UDP, Established) to the backend.
-  - Public, sanitized telemetry endpoint (`GET /api/sensor/telemetry`) enables frontend display without exposing authentication tokens.
-  - Automatic staleness detection flags disconnected sensors (>15s warning, >60s offline).
-- **Trained 74-Feature Random Forest Model (CIC-IDS2017)**:
-  - Production-grade ML pipeline with `SimpleImputer` and `RandomForestClassifier`.
-  - Rigorous input schema validation prevents bandwidth statistics from corrupting flow-level inference.
-  - Includes a one-click benchmark dataset loader (`sample_test.csv`) to test real ML predictions instantly.
-- **Persistent Audit History & Telemetry Analytics**:
-  - Records session history across audits with classification metrics and threat rates.
-  - Exportable and filterable results tables with client-side pagination.
+## 🚀 Live Deployment
 
----
+- **Frontend:** https://sentinel-cyber-v2-backend.vercel.app/
+- **Backend:** https://sentinel-cyber-backend-jntd.onrender.com
+
+The frontend communicates with the deployed FastAPI backend to retrieve sensor telemetry and backend health information.
+
+## 🛡️ Features
+
+### SOC Dashboard
+- Dark navy cybersecurity interface with electric-blue accents.
+- Responsive dashboard layout and navigation.
+- Network activity visualizations using Chart.js.
+- KPI cards, telemetry summaries, and dashboard notifications.
+- Overview of backend and sensor connectivity.
+
+### Windows Host Telemetry
+- Python-based Windows monitoring sensor using `psutil`.
+- Collects network interface counters and host-level socket statistics.
+- Reports upload/download rates, bytes transferred, packet counters, and TCP/UDP connection information.
+- Sends telemetry to the FastAPI backend.
+- Displays sensor connectivity and telemetry freshness.
+
+### Backend API
+- FastAPI-based REST backend.
+- Health-check endpoint.
+- Sensor telemetry endpoint.
+- Backend integration with the deployed frontend.
+- Sensor authentication configuration through environment variables.
+
+### Machine Learning
+- Pre-trained Random Forest pipeline.
+- CIC-IDS2017 dataset feature schema containing 74 ordered features.
+- Model artifact and feature-column metadata.
+- Dataset-based prediction workflow.
+
+**Important:** The trained model and dataset prediction workflow are separate from the current host telemetry stream. Host interface counters are not equivalent to the 74 network-flow features expected by the model.
+
+### Dataset Analysis
+- CSV dataset ingestion and inspection.
+- Feature validation.
+- Dataset-based model predictions.
+- Prediction history and result visualization.
+
+## 🏗️ System Architecture
+
+```text
+                  SENTINEL CYBER V2
+
+       Windows Laptop
+             |
+             v
+     Windows Monitor Sensor
+          (psutil)
+             |
+             v
+       HTTPS Telemetry
+             |
+             v
+       FastAPI Backend
+           (Render)
+             |
+             v
+       Telemetry API
+             |
+             v
+       SOC Dashboard
+           (Vercel)
+             |
+             v
+       Live Monitoring UI
+```
+
+The machine-learning pipeline currently operates separately through dataset-based prediction.
+
+## 🧠 Machine Learning Architecture
+
+The project includes a Random Forest classification pipeline trained using the CIC-IDS2017 feature schema.
+
+- Model: Random Forest Classifier
+- Feature schema: 74 ordered numerical features
+- Dataset: CIC-IDS2017
+- Pipeline: Preprocessing and classification
+- Model artifact: `model.joblib`
+- Feature metadata: `feature_columns.json`
+
+### Host Telemetry vs. Network Flow Classification
+
+These are two different data sources:
+
+| Component | Data collected | Purpose |
+|---|---|---|
+| Windows host sensor | Interface counters and socket statistics | Live host monitoring |
+| CIC-IDS2017 model | 74 network-flow features | Dataset-based intrusion classification |
+
+A host-level upload speed or connection count cannot be substituted for packet-level flow features. Live network-flow inference requires a separate flow-capture and feature-extraction pipeline.
+
+## 🧰 Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | HTML5, CSS3, JavaScript |
+| Visualization | Chart.js |
+| Backend | Python, FastAPI |
+| Machine Learning | Scikit-learn, Random Forest |
+| Data Processing | Pandas, NumPy |
+| Host Monitoring | psutil |
+| Deployment | Vercel, Render |
+| Version Control | Git, GitHub |
 
 ## 📁 Repository Structure
 
-```
+```text
 sentinel-cyber/
-├── index.html                           # Single-Page Application SOC Interface
-├── vercel.json                          # Vercel Production Deployment Config
-├── render.yaml                          # Render Blueprint Infrastructure-as-Code
-├── .env.example                         # Master Multi-Environment Guide
-├── .gitignore                           # Git Rules (excludes virtualenvs, secrets)
+├── index.html
+├── vercel.json
+├── render.yaml
+├── .env.example
+├── .gitignore
 │
 ├── css/
-│   ├── style.css                        # Dark Navy Base Theme, Utilities & Glows
-│   ├── dashboard.css                    # SOC Cards, Telemetry Banner, Tables & Dropzone
-│   └── responsive.css                   # Responsive Layout Breakpoints
+│   ├── style.css
+│   ├── dashboard.css
+│   └── responsive.css
 │
 ├── js/
-│   ├── api.js                           # Dual-Environment API Adapter & Demo Fallback
-│   ├── app.js                           # SPA Orchestrator, Settings & Notifications
-│   ├── dashboard.js                     # Overview KPIs, Telemetry Poller & Alert Feed
-│   ├── upload.js                        # CSV Ingestion, Validation & Benchmark Loader
-│   ├── predictions.js                   # ML Predictions Table, Filtering & History
-│   ├── charts.js                        # Chart.js Electric Blue Theme Visualizations
-│   ├── navigation.js                    # Sidebar Drawer & Mobile Navigation
-│   └── demo-data.js                     # High-Fidelity Synthetic Telemetry
+│   ├── api.js
+│   ├── app.js
+│   ├── dashboard.js
+│   ├── upload.js
+│   ├── predictions.js
+│   ├── charts.js
+│   ├── navigation.js
+│   └── demo-data.js
 │
-├── backend/
-│   ├── main.py                          # FastAPI SOC REST API
-│   ├── requirements.txt                 # Backend Python Dependencies
-│   ├── run.bat                          # One-Click Windows FastAPI Runner
-│   ├── run_sensor.bat                   # One-Click Windows Sensor Runner
-│   ├── run.sh                           # Linux/macOS Startup Script
-│   ├── sample_test.csv                  # Compliant 74-Feature Benchmark Capture
-│   │
-│   ├── artifacts/
-│   │   ├── model.joblib                 # Trained Random Forest Pipeline
-│   │   └── feature_columns.json         # 74 Ordered CIC-IDS2017 Feature Names
-│   │
-│   └── sensor/
-│       ├── windows_monitor.py           # Windows Host Telemetry Sensor (psutil)
-│       └── __init__.py
+└── backend/
+    ├── main.py
+    ├── requirements.txt
+    ├── run.bat
+    ├── run_sensor.bat
+    ├── run.sh
+    ├── sample_test.csv
+    │
+    ├── artifacts/
+    │   ├── model.joblib
+    │   └── feature_columns.json
+    │
+    └── sensor/
+        ├── windows_monitor.py
+        └── __init__.py
 ```
 
----
+*This structure describes the expected project layout; update it if the repository structure changes.*
 
-## ⚡ Quick Start (Local Development)
+## ⚡ Local Setup
 
-### 1. Start the FastAPI Backend
+### 1. Clone the repository
+
+```powershell
+git clone https://github.com/suhan-khan/Sentinel-cyberV2.git
+cd Sentinel-cyberV2
+```
+
+### 2. Set up the Python environment
+
 ```powershell
 cd backend
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
+
+### 3. Start the backend
+
+```powershell
 python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
-API Documentation will be available at `http://localhost:8000/docs`.
 
-### 2. Launch the Windows Telemetry Sensor
-Open a second PowerShell terminal:
+Backend API documentation:
+
+http://127.0.0.1:8000/docs
+
+### 4. Configure the Windows sensor
+
+Configure the sensor environment variables in PowerShell:
+
 ```powershell
-cd backend\sensor
-python windows_monitor.py
-```
-Or double-click `backend\run_sensor.bat`.
-
-### 3. Open the Frontend
-Open `index.html` in your web browser (or serve with `npx serve` / Live Server). The dashboard automatically detects `localhost` and connects to your local FastAPI instance!
-
----
-
-## 🚀 Cloud Deployment (Render & Vercel)
-
-### Deploy Backend to Render
-1. Push this repository to GitHub.
-2. In Render, create a new **Web Service** pointing to your repository.
-3. Configure the service:
-   - **Root Directory**: `backend`
-   - **Build Command**: `pip install --upgrade pip && pip install -r requirements.txt`
-   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-4. Set Environment Variables on Render:
-   - `PYTHON_VERSION`: `3.11.9`
-   - `SENTINEL_SENSOR_TOKEN`: `<your-random-token>`
-   - `CORS_ALLOW_ALL`: `true`
-
-### Deploy Frontend to Vercel
-1. Import this repository into Vercel.
-2. Vercel automatically reads `vercel.json`.
-3. In `js/api.js` or via the **Settings** page in the dashboard, set your Render API URL.
-
-### Connect Windows Sensor to Render
-To stream your local machine's telemetry directly to the deployed Render backend:
-```powershell
-python backend\sensor\windows_monitor.py --url https://your-backend.onrender.com --token <YOUR_RENDER_TOKEN>
+$env:SENTINEL_SENSOR_TOKEN = "YOUR_SENSOR_TOKEN"
+$env:SENTINEL_API_URL = "http://127.0.0.1:8000"
 ```
 
----
+Start the sensor from the repository root:
 
-## 🔬 Cybersecurity Architecture Note: Host Telemetry vs. Flow Inference
+```powershell
+python backend/sensor/windows_monitor.py
+```
 
-Sentinel Cyber strictly enforces separation between **host-level telemetry** and **network flow classification**:
+Keep the sensor terminal running while monitoring.
 
-| Level | Component | Data Source | Features |
-|---|---|---|---|
-| **Host Interface** | Windows Sensor (`psutil`) | Network Adapter Counters | Bytes/sec, Packets/sec, Socket counts (TCP/UDP) |
-| **Network Flow** | Random Forest (`model.joblib`) | Bidirectional Flow Packets | 74 Statistical Flow Features (Duration, IAT, Flags, Packet Lengths) |
+### 5. Open the frontend
 
-> ⚠️ **Important**: Basic interface bandwidth counters cannot be fed directly into a 74-feature CIC-IDS2017 machine learning model. Doing so would produce fabricated or invalid predictions. Genuine real-time flow inference requires a packet-sniffing engine (e.g. Npcap + NFStream/CICFlowMeter) to reconstruct raw biflows.
+Open `index.html` in a browser or use a local development server such as VS Code Live Server.
 
----
+Make sure the frontend API configuration points to your local backend.
+
+## ☁️ Cloud Deployment
+
+### Backend — Render
+
+The backend is deployed on Render.
+
+Production API base URL:
+
+```text
+https://sentinel-cyber-backend-jntd.onrender.com
+```
+
+Configure the required environment variables in the Render dashboard, including the sensor authentication token.
+
+### Frontend — Vercel
+
+The frontend is deployed on Vercel.
+
+Production URL:
+
+```text
+https://sentinel-cyber-v2-backend.vercel.app/
+```
+
+The frontend must use the correct Render API base URL to retrieve live telemetry.
+
+### Connect a Windows Sensor to the Deployed Backend
+
+Configure the environment variables in PowerShell:
+
+```powershell
+$env:SENTINEL_SENSOR_TOKEN = "YOUR_SENSOR_TOKEN"
+$env:SENTINEL_API_URL = "https://sentinel-cyber-backend-jntd.onrender.com"
+```
+
+Then run:
+
+```powershell
+python backend/sensor/windows_monitor.py
+```
+
+**Security note:** Never commit real sensor tokens, API credentials, or private environment files to GitHub.
+
+## 🔭 Development Roadmap
+
+The following capabilities are planned or under development:
+
+- [x] SOC frontend deployment
+- [x] FastAPI backend deployment
+- [x] Windows host telemetry integration
+- [x] Live telemetry display
+- [x] Random Forest model artifact and 74-feature schema
+- [x] Dataset-based prediction workflow
+- [ ] Individual network-flow capture
+- [ ] Bidirectional flow tracking
+- [ ] CIC-IDS2017-compatible 74-feature extraction
+- [ ] Live network-flow inference
+- [ ] Real-time threat classification and alert generation
+- [ ] Multi-device sensor registration and monitoring
+- [ ] End-to-end live intrusion detection testing
+
+## ⚠️ Current Limitations
+
+- Live sensor telemetry currently represents host-level network interface statistics.
+- The sensor does not yet provide the 74-feature bidirectional network flows required for live Random Forest inference.
+- Opening the public dashboard on another computer does not automatically install or start a sensor on that computer.
+- Multi-device monitoring is a future development goal.
+- Live intrusion detection performance has not yet been validated end to end.
 
 ## 📄 License
-MIT License. Created for Network Intrusion Detection System research and SOC demonstration.
+
+MIT License.
+
+Developed as a cybersecurity and machine-learning project exploring SOC dashboards, host telemetry monitoring, and network intrusion detection.
