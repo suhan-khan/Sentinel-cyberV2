@@ -494,12 +494,15 @@ window.SentinelApp = {
     }
 
     if (btnRender && apiInput) {
-      btnRender.addEventListener('click', () => {
-        apiInput.value = 'https://sentinel-cyber.onrender.com';
-        window.ApiService.setApiUrl('https://sentinel-cyber.onrender.com');
-        this.showNotification('API preset set to Render Production', 'info');
-      });
-    }
+  btnRender.addEventListener('click', () => {
+    const renderUrl = 'https://sentinel-cyber-backend-jntd.onrender.com';
+
+    apiInput.value = renderUrl;
+    window.ApiService.setApiUrl(renderUrl);
+
+    this.showNotification('API preset set to Sentinel Cyber V2 Render Backend', 'success');
+  });
+}
 
     if (btnReset && apiInput) {
       btnReset.addEventListener('click', () => {
