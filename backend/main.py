@@ -241,8 +241,10 @@ class AssistantChatRequest(BaseModel):
 
 GEMINI_MODEL = os.getenv(
     "GEMINI_MODEL",
-    "gemini-2.5-flash"
+     "gemini-3.8-flash"
+  
 )
+
 
 ASSISTANT_RATE_LIMIT = 10
 ASSISTANT_RATE_WINDOW = 60
