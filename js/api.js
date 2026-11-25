@@ -339,18 +339,40 @@ window.ApiService = {
 
   /**
    * Send a message to Sentinel AI Assistant.
+   * Limits conversation history to prevent backend validation errors.
    */
   async sendAssistantMessage(message, history = []) {
     if (!this.API_BASE_URL) {
       this.init();
     }
 
+    if (typeof message !== 'string' || !message.trim()) {
+      throw new Error('Please enter a valid message.');
+    }
+
+    if (message.trim().length > 2000) {
+      throw new Error('Your message exceeds the 2,000-character limit.');
+    }
+
+    const normalizedHistory = (Array.isArray(history) ? history : [])
+      .filter(turn =>
+        turn &&
+        ['user', 'model'].includes(turn.role) &&
+        typeof turn.content === 'string' &&
+        turn.content.trim().length > 0
+      )
+      .slice(-8)
+      .map(turn => ({
+        role: turn.role,
+        content: turn.content.trim().slice(0, 1800)
+      }));
+
     return await this._request(
       'POST',
       '/api/assistant/chat',
       JSON.stringify({
-        message,
-        history: history.slice(-8)
+        message: message.trim(),
+        history: normalizedHistory
       }),
       true
     );
