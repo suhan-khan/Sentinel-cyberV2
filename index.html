@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sentinel Cyber — AI-Powered SOC & Network Intrusion Detection</title>
 
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,21 +14,18 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/dashboard.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/chatbot.css">
 </head>
 <body>
 
-  <!-- Demo Mode Banner (hidden by default when backend is live) -->
   <div id="demo-mode-banner" class="demo-mode-banner">
     DEMO MODE — Displaying simulated telemetry. Connect your FastAPI backend (Local or Render) for real-time monitoring and inference.
   </div>
 
-  <!-- Mobile Overlay -->
   <div id="mobile-overlay" class="mobile-overlay"></div>
-
-  <!-- Notification Toast Container -->
   <div class="notification-toast-container" id="notification-container"></div>
 
-  <!-- ========== SIDEBAR ========== -->
+  <!-- SIDEBAR -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">
@@ -116,7 +113,7 @@
     </nav>
   </aside>
 
-  <!-- ========== TOPBAR ========== -->
+  <!-- TOPBAR -->
   <header id="topbar" class="topbar">
     <div class="topbar-left">
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open Mobile Menu">
@@ -161,19 +158,16 @@
     </div>
   </header>
 
-  <!-- ========== MAIN CONTENT ========== -->
+  <!-- MAIN CONTENT -->
   <main class="main-content">
 
-    <!-- ============================= -->
-    <!-- PAGE: OVERVIEW                -->
-    <!-- ============================= -->
+    <!-- OVERVIEW -->
     <section id="page-overview" class="page-section active">
 
-      <!-- Live Network Telemetry (Host Windows Sensor) -->
       <div class="telemetry-banner" id="telemetry-banner">
         <div class="telemetry-header">
           <div class="telemetry-title-group">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
               <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
               <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
@@ -185,18 +179,24 @@
               <span id="sensor-status-text">Sensor Offline</span>
             </span>
           </div>
+
           <div style="display:flex; align-items:center; gap:12px;">
             <span style="font-size:0.75rem; color:var(--text-muted);" id="sensor-last-updated">Waiting for sensor stream...</span>
             <button class="btn btn-sm btn-secondary" id="btn-refresh-telemetry" title="Sync Telemetry">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
               Sync
             </button>
           </div>
         </div>
+
         <div class="telemetry-grid">
           <div class="telemetry-item">
             <span class="telemetry-item-label">Interface & Device</span>
-            <span class="telemetry-item-value" id="sensor-device" style="font-size:0.95rem; color:var(--accent-cyan);">--</span>
+            <span class="telemetry-item-value" id="sensor-device" style="font-size:0.95rem; color:var(--accent-purple);">--</span>
             <span class="telemetry-item-sub" id="sensor-interface">No active stream</span>
           </div>
           <div class="telemetry-item">
@@ -220,15 +220,18 @@
             <span class="telemetry-item-sub" id="sensor-errors">Errors: 0 in / 0 out</span>
           </div>
         </div>
+
         <div class="telemetry-disclaimer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
           <span>Host network interface & socket counters (psutil). Distinct from the 74-feature bidirectional flow records used by the Random Forest model.</span>
         </div>
       </div>
 
-      <!-- Stats Grid (Session / Model Predictions) -->
       <div class="stats-grid">
-        <!-- Total Connections -->
         <div class="stat-card" id="stat-total">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -245,7 +248,6 @@
           </div>
         </div>
 
-        <!-- Malicious Detected -->
         <div class="stat-card" id="stat-malicious">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -261,7 +263,6 @@
           </div>
         </div>
 
-        <!-- Normal Connections -->
         <div class="stat-card" id="stat-normal">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -276,7 +277,6 @@
           </div>
         </div>
 
-        <!-- Detection Rate -->
         <div class="stat-card" id="stat-rate">
           <div class="stat-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -292,9 +292,7 @@
         </div>
       </div>
 
-      <!-- Traffic Chart + Threat Distribution -->
       <div class="dashboard-row">
-        <!-- Traffic Overview Chart -->
         <div class="card">
           <div class="card-header">
             <h3>Traffic Overview</h3>
@@ -312,7 +310,6 @@
           </div>
         </div>
 
-        <!-- Threat Distribution Doughnut -->
         <div class="card">
           <div class="card-header">
             <h3>Threat Distribution</h3>
@@ -325,7 +322,6 @@
         </div>
       </div>
 
-      <!-- Recent Alerts -->
       <div class="card" style="margin-bottom: 24px;">
         <div class="card-header">
           <h3>Recent Security Alerts</h3>
@@ -344,15 +340,12 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody id="alerts-table-body">
-                <!-- Populated dynamically by JS -->
-              </tbody>
+              <tbody id="alerts-table-body"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- System Health -->
       <div class="section-title">System Health & Subsystem Diagnostics</div>
       <div id="system-health" class="system-health-grid">
         <div class="health-item" id="health-model-status">
@@ -372,15 +365,10 @@
           <span class="health-status ready">Ready (74 Features)</span>
         </div>
       </div>
-
     </section>
 
-    <!-- ============================= -->
-    <!-- PAGE: NETWORK TRAFFIC         -->
-    <!-- ============================= -->
+    <!-- NETWORK TRAFFIC -->
     <section id="page-network" class="page-section">
-
-      <!-- Mini Stat Cards -->
       <div class="traffic-stats">
         <div class="mini-stat-card">
           <span class="mini-stat-value" id="network-total-value">0</span>
@@ -396,7 +384,6 @@
         </div>
       </div>
 
-      <!-- Filter Bar -->
       <div class="filter-bar">
         <select id="traffic-filter-status">
           <option value="all">All Classifications</option>
@@ -414,7 +401,6 @@
         <input type="text" id="traffic-search" placeholder="Search by IP, classification, protocol...">
       </div>
 
-      <!-- Traffic Table -->
       <div class="card">
         <div class="card-body" style="padding: 0;">
           <div class="table-responsive">
@@ -432,35 +418,31 @@
                   <th class="sortable" data-sort="confidence">Confidence</th>
                 </tr>
               </thead>
-              <tbody id="traffic-table-body">
-                <!-- Populated dynamically by JS -->
-              </tbody>
+              <tbody id="traffic-table-body"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Pagination -->
       <div class="table-pagination">
         <button class="btn btn-sm btn-secondary" id="traffic-prev-btn" disabled>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
           Previous
         </button>
         <span class="page-info" id="traffic-page-info">Page 1 of 1</span>
         <button class="btn btn-sm btn-secondary" id="traffic-next-btn" disabled>
           Next
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
-
     </section>
 
-    <!-- ============================= -->
-    <!-- PAGE: THREAT DETECTION        -->
-    <!-- ============================= -->
+    <!-- THREAT DETECTION -->
     <section id="page-threats" class="page-section">
-
-      <!-- Threat Mini Stat Cards -->
       <div class="threat-stats">
         <div class="mini-stat-card">
           <span class="mini-stat-value" id="threats-total-value">0</span>
@@ -480,7 +462,6 @@
         </div>
       </div>
 
-      <!-- Filter Bar -->
       <div class="filter-bar">
         <select id="threats-filter-severity">
           <option value="all">All Severities</option>
@@ -492,7 +473,6 @@
         <input type="text" id="threats-search" placeholder="Search threats by vector, source, destination...">
       </div>
 
-      <!-- Charts Row -->
       <div class="dashboard-row-equal" style="margin-bottom: 24px;">
         <div class="card">
           <div class="card-header">
@@ -517,7 +497,6 @@
         </div>
       </div>
 
-      <!-- Threats Table -->
       <div class="card">
         <div class="card-header">
           <h3>Detected Threat Surface Incidents</h3>
@@ -536,40 +515,34 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody id="threats-table-body">
-                <!-- Populated dynamically by JS -->
-              </tbody>
+              <tbody id="threats-table-body"></tbody>
             </table>
           </div>
         </div>
       </div>
-
     </section>
 
-    <!-- ============================= -->
-    <!-- PAGE: UPLOAD DATASET          -->
-    <!-- ============================= -->
+    <!-- UPLOAD DATASET -->
     <section id="page-upload" class="page-section">
-
       <div class="card" style="margin-bottom: 24px;">
         <div class="card-header">
           <h3>Upload Network Traffic Dataset</h3>
         </div>
         <div class="card-body">
 
-          <!-- Benchmark Sample Dataset Helper -->
-          <div style="margin-bottom: 20px; padding: 14px 18px; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="margin-bottom: 20px; padding: 14px 18px; background: rgba(167, 139, 250, 0.07); border: 1px solid rgba(167, 139, 250, 0.22); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
             <div>
-              <div style="font-weight: 600; font-size: 0.88rem; color: var(--accent-cyan);">Ready to test genuine ML model inference?</div>
+              <div style="font-weight: 600; font-size: 0.88rem; color: var(--accent-purple);">Ready to test genuine ML model inference?</div>
               <div style="font-size: 0.78rem; color: var(--text-secondary);">Load the included 74-feature benchmark capture (<code style="color:var(--text-primary); font-family:monospace;">sample_test.csv</code>) conforming to CIC-IDS2017 specifications with one click.</div>
             </div>
             <button class="btn btn-cyber btn-sm" id="btn-load-sample-dataset">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
               Load Included Sample Dataset
             </button>
           </div>
 
-          <!-- Upload Zone -->
           <div id="upload-zone" class="upload-zone">
             <input type="file" id="file-input" accept=".csv" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -582,7 +555,6 @@
             <p class="upload-hint">Supported format: CSV with 74 CIC-IDS2017 flow features. Maximum upload: 50MB.</p>
           </div>
 
-          <!-- File Info (hidden until file selected) -->
           <div id="upload-file-info" class="file-info hidden">
             <div class="file-info-left">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -595,12 +567,14 @@
               <span class="file-size" id="upload-filesize">0 KB</span>
             </div>
             <button class="btn btn-sm btn-danger" id="upload-remove-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
               Remove
             </button>
           </div>
 
-          <!-- Progress Bar -->
           <div id="upload-progress" class="hidden" style="margin-bottom: 16px;">
             <div class="progress-bar">
               <div class="progress-fill" id="upload-progress-fill" style="width: 0%;"></div>
@@ -608,13 +582,15 @@
             <div class="progress-text" id="upload-progress-text">0%</div>
           </div>
 
-          <!-- Error Alert -->
           <div id="upload-error" class="alert alert-error hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
             <span id="upload-error-text">Error message goes here</span>
           </div>
 
-          <!-- Preview Section -->
           <div id="upload-preview" class="preview-section hidden">
             <div class="preview-info">
               <div>Rows: <span id="upload-row-count">0</span></div>
@@ -622,38 +598,28 @@
             </div>
             <div class="preview-table-wrapper">
               <table class="data-table">
-                <thead id="preview-table-head">
-                  <!-- Populated dynamically by JS -->
-                </thead>
-                <tbody id="preview-table-body">
-                  <!-- Populated dynamically by JS -->
-                </tbody>
+                <thead id="preview-table-head"></thead>
+                <tbody id="preview-table-body"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- Analyze Button -->
           <div style="margin-top: 24px; text-align: center;">
             <button id="btn-analyze" class="btn btn-primary btn-lg" disabled>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
               Run AI Random Forest Inference
             </button>
           </div>
 
-          <!-- Upload Status Text -->
           <div id="upload-status" class="upload-status"></div>
-
         </div>
       </div>
-
     </section>
 
-    <!-- ============================= -->
-    <!-- PAGE: PREDICTIONS             -->
-    <!-- ============================= -->
+    <!-- PREDICTIONS -->
     <section id="page-predictions" class="page-section">
-
-      <!-- Prediction Stat Cards -->
       <div class="prediction-stats">
         <div class="mini-stat-card">
           <span class="mini-stat-value" id="pred-total-value">0</span>
@@ -668,12 +634,11 @@
           <span class="mini-stat-label">Attacks Classified</span>
         </div>
         <div class="mini-stat-card">
-          <span class="mini-stat-value" id="pred-confidence-value" style="color:var(--accent-cyan);">0%</span>
+          <span class="mini-stat-value" id="pred-confidence-value" style="color:var(--accent-purple);">0%</span>
           <span class="mini-stat-label">Avg Confidence</span>
         </div>
       </div>
 
-      <!-- Filter Bar -->
       <div class="filter-bar">
         <select id="predictions-filter">
           <option value="all">All Classifications</option>
@@ -683,7 +648,6 @@
         <input type="text" id="predictions-search" placeholder="Search predictions by IP, classification, protocol...">
       </div>
 
-      <!-- Predictions Table -->
       <div class="card">
         <div class="card-header">
           <h3>Inference Results Table</h3>
@@ -702,34 +666,31 @@
                   <th>Severity</th>
                 </tr>
               </thead>
-              <tbody id="predictions-table-body">
-                <!-- Populated dynamically by JS -->
-              </tbody>
+              <tbody id="predictions-table-body"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Pagination -->
       <div class="table-pagination">
         <button class="btn btn-sm btn-secondary" id="pred-prev-btn" disabled>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
           Previous
         </button>
         <span class="page-info" id="pred-page-info">Page 1 of 1</span>
         <button class="btn btn-sm btn-secondary" id="pred-next-btn" disabled>
           Next
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
-
     </section>
 
-    <!-- ============================= -->
-    <!-- PAGE: HISTORY                 -->
-    <!-- ============================= -->
+    <!-- HISTORY -->
     <section id="page-history" class="page-section">
-
       <div class="card">
         <div class="card-header">
           <h3>Analysis Audit History</h3>
@@ -748,15 +709,12 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="history-table-body">
-                <!-- Populated dynamically by JS -->
-              </tbody>
+              <tbody id="history-table-body"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Empty State -->
       <div id="history-empty-state" class="empty-state hidden">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <circle cx="12" cy="12" r="10"></circle>
@@ -764,14 +722,10 @@
         </svg>
         <p>No past analysis sessions found in memory. Upload a dataset to generate intrusion prediction history.</p>
       </div>
-
     </section>
 
-    <!-- ============================= -->
-    <!-- PAGE: ANALYTICS               -->
-    <!-- ============================= -->
+    <!-- ANALYTICS -->
     <section id="page-analytics" class="page-section">
-
       <div class="analytics-grid">
         <div class="card">
           <div class="card-header">
@@ -817,15 +771,11 @@
           </div>
         </div>
       </div>
-
     </section>
 
-    <!-- ============================= -->
-    <!-- PAGE: SETTINGS                -->
-    <!-- ============================= -->
+    <!-- SETTINGS -->
     <section id="page-settings" class="page-section">
 
-      <!-- Backend Connection Settings -->
       <div class="settings-section">
         <h3>FastAPI Backend Environment Configuration</h3>
         <p style="margin-bottom: 16px; font-size: 0.84rem;">
@@ -836,12 +786,15 @@
           <label for="settings-api-url">API Base URL</label>
           <input type="url" id="settings-api-url" value="http://localhost:8000" placeholder="http://localhost:8000 or https://your-app.onrender.com">
           <button class="btn btn-secondary btn-sm" id="settings-test-connection">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
             Test Connection
           </button>
         </div>
 
-        <!-- Environment Presets -->
         <div class="settings-row">
           <label>Quick Presets</label>
           <div class="settings-presets">
@@ -851,49 +804,108 @@
           </div>
         </div>
 
-        <!-- Connection Test Results Box -->
         <div id="settings-connection-result" style="margin-top:14px; padding:12px 16px; border-radius:var(--radius-md); font-size:0.84rem; display:none;"></div>
       </div>
 
-      <!-- Sensor Security Notice -->
       <div class="settings-section">
         <h3>Windows Telemetry Sensor Security</h3>
         <p style="font-size: 0.84rem; margin-bottom: 12px;">
-          The Windows network sensor securely posts telemetry snapshots using the <code style="color:var(--accent-cyan); font-family:monospace;">X-Sentinel-Token</code> header.
+          The Windows network sensor securely posts telemetry snapshots using the <code style="color:var(--accent-purple); font-family:monospace;">X-Sentinel-Token</code> header.
         </p>
         <div class="alert alert-info" style="margin-bottom: 0;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
           <div>
             <strong>Zero Frontend Credential Exposure:</strong> The secret sensor token is never saved in browser localStorage, cookies, or frontend code. Telemetry displayed on this dashboard is retrieved via the sanitized, read-only endpoint <code style="color:var(--text-primary); font-family:monospace;">GET /api/sensor/telemetry</code>.
           </div>
         </div>
       </div>
 
-      <!-- Data Management -->
       <div class="settings-section">
         <h3>Data Management</h3>
         <div class="settings-row">
           <label>Audit History</label>
           <button class="btn btn-danger btn-sm" id="settings-clear-history">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
             Clear Stored History
           </button>
         </div>
       </div>
 
-      <!-- Save Button -->
       <div class="settings-actions">
         <button class="btn btn-primary" id="settings-save">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
           Save Configuration
         </button>
       </div>
-
     </section>
 
   </main>
 
-  <!-- ========== SCRIPTS ========== -->
+  <!-- SENTINEL AI ASSISTANT -->
+  <button
+    id="sentinel-chat-launcher"
+    type="button"
+    aria-label="Open Sentinel AI Assistant"
+    aria-expanded="false"
+  >
+    <span class="launcher-icon">✦</span>
+    <span class="launcher-dot"></span>
+  </button>
+
+  <section
+    id="sentinel-chat-window"
+    class="hidden"
+    aria-label="Sentinel AI Assistant"
+  >
+    <header class="sentinel-chat-header">
+      <div class="sentinel-chat-brand">
+        <div class="sentinel-chat-logo">✦</div>
+        <div>
+          <div class="sentinel-chat-title">Sentinel AI Assistant</div>
+          <div class="sentinel-chat-subtitle">
+            <span class="sentinel-chat-status"></span>
+            AI Assistant
+          </div>
+        </div>
+      </div>
+
+      <div class="sentinel-chat-actions">
+        <button id="sentinel-chat-clear" type="button" title="Clear chat" aria-label="Clear chat">↻</button>
+        <button id="sentinel-chat-close" type="button" title="Close chat" aria-label="Close chat">×</button>
+      </div>
+    </header>
+
+    <div id="sentinel-chat-messages" role="log" aria-live="polite"></div>
+
+    <div class="sentinel-chat-input-area">
+      <div class="sentinel-chat-input-wrapper">
+        <textarea
+          id="sentinel-chat-input"
+          rows="1"
+          maxlength="2000"
+          placeholder="Ask Sentinel AI..."
+          aria-label="Message Sentinel AI"
+        ></textarea>
+
+        <button id="sentinel-chat-send" type="button" aria-label="Send message">➤</button>
+      </div>
+
+      <div class="sentinel-chat-disclaimer">
+        AI-generated guidance. Verify important security findings.
+      </div>
+    </div>
+  </section>
+
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
   <script src="js/demo-data.js"></script>
   <script src="js/api.js"></script>
@@ -903,6 +915,7 @@
   <script src="js/dashboard.js"></script>
   <script src="js/upload.js"></script>
   <script src="js/predictions.js"></script>
+  <script src="js/chatbot.js"></script>
 
 </body>
 </html>

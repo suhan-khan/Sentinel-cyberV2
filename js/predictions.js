@@ -1,6 +1,6 @@
 
 /**
- * Sentinel Cyber — Predictions & History Controller
+ * Sentinel Cyber V2 — Predictions & History Controller
  * Supports backend predictions, filtering, sorting, pagination,
  * live chart updates, and persistent analysis history.
  */
@@ -36,10 +36,29 @@ window.Predictions = {
 
   isNormal(item) {
     const classification = String(
-      item.classification || ''
+      item?.classification || ''
     ).toLowerCase();
 
     return ['normal', 'benign'].includes(classification);
+  },
+
+  getSafeSeverityClass(severity) {
+    const allowed = [
+      'critical',
+      'high',
+      'medium',
+      'low',
+      'info',
+      'normal'
+    ];
+
+    const normalized = String(severity || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, '');
+
+    return allowed.includes(normalized)
+      ? normalized
+      : 'info';
   },
 
   setupListeners() {
@@ -91,7 +110,10 @@ window.Predictions = {
     sortHeaders.forEach(th => {
       th.addEventListener('click', () => {
         const field = th.getAttribute('data-sort');
-        if (field) this.sortPredictions(field);
+
+        if (field) {
+          this.sortPredictions(field);
+        }
       });
     });
   },
@@ -106,7 +128,6 @@ window.Predictions = {
     this.filteredData = [...records];
     this.currentPage = 1;
 
-    // Reset existing filters when a new analysis is loaded.
     const filterSelect = document.getElementById('predictions-filter');
     const searchInput = document.getElementById('predictions-search');
 
@@ -115,7 +136,6 @@ window.Predictions = {
 
     this.renderPredictions();
 
-    // Update charts with the latest backend predictions.
     if (window.Charts?.updateFromPredictions) {
       window.Charts.updateFromPredictions(this.currentData);
     }
@@ -222,15 +242,21 @@ window.Predictions = {
 
     const setEl = (id, value) => {
       const el = document.getElementById(id);
-      if (el) el.innerText = value;
+
+      if (el) {
+        el.innerText = value;
+      }
     };
 
     setEl('pred-total-value', totalCount.toLocaleString());
     setEl('pred-normal-value', normalCount.toLocaleString());
     setEl('pred-malicious-value', maliciousCount.toLocaleString());
+
     setEl(
       'pred-confidence-value',
-      avgConfidence === 'N/A' ? avgConfidence : avgConfidence + '%'
+      avgConfidence === 'N/A'
+        ? avgConfidence
+        : avgConfidence + '%'
     );
 
     this.renderTableOnly();
@@ -238,6 +264,7 @@ window.Predictions = {
 
   renderTableOnly() {
     const tbody = document.getElementById('predictions-table-body');
+
     if (!tbody) return;
 
     const totalPages = Math.ceil(
@@ -290,13 +317,12 @@ window.Predictions = {
         );
 
         const safeSeverity = this.escapeHTML(severity);
+
         const safeClassification = this.escapeHTML(
           item.classification || 'Unknown'
         );
 
-        const severityClass = severity
-          .toLowerCase()
-          .replace(/[^a-z0-9_-]/g, '');
+        const severityClass = this.getSafeSeverityClass(severity);
 
         return `
           <tr>
@@ -305,7 +331,7 @@ window.Predictions = {
             </td>
 
             <td>
-              <span style="font-family: monospace; color: var(--accent-cyan);">
+              <span style="font-family: monospace; color: var(--accent-purple);">
                 ${this.escapeHTML(item.srcIp || 'N/A')}
               </span>
             </td>
@@ -334,7 +360,7 @@ window.Predictions = {
                   ${confPct === null ? 'N/A' : confPct + '%'}
                 </span>
 
-                <div style="width: 50px; height: 5px; background: #374151; border-radius: 3px; overflow: hidden;">
+                <div style="width: 50px; height: 5px; background: var(--border-color, #374151); border-radius: 3px; overflow: hidden;">
                   <div style="width: ${confPct ?? 0}%; height: 100%; background: ${confColor};"></div>
                 </div>
               </div>
@@ -360,8 +386,13 @@ window.Predictions = {
     const prevBtn = document.getElementById('pred-prev-btn');
     const nextBtn = document.getElementById('pred-next-btn');
 
-    if (prevBtn) prevBtn.disabled = this.currentPage <= 1;
-    if (nextBtn) nextBtn.disabled = this.currentPage >= totalPages;
+    if (prevBtn) {
+      prevBtn.disabled = this.currentPage <= 1;
+    }
+
+    if (nextBtn) {
+      nextBtn.disabled = this.currentPage >= totalPages;
+    }
   },
 
   renderHistory() {
@@ -372,13 +403,23 @@ window.Predictions = {
 
     let historyList = [];
 
-    const stored = localStorage.getItem('sentinel_analysis_history');
+    const stored = localStorage.getItem(
+      'sentinel_analysis_history'
+    );
 
     if (stored) {
       try {
         historyList = JSON.parse(stored);
-        if (!Array.isArray(historyList)) historyList = [];
+
+        if (!Array.isArray(historyList)) {
+          historyList = [];
+        }
       } catch (error) {
+        console.warn(
+          '[Predictions] Could not parse analysis history:',
+          error
+        );
+
         historyList = [];
       }
     }
@@ -388,12 +429,17 @@ window.Predictions = {
     }
 
     if (historyList.length === 0) {
-      if (emptyState) emptyState.style.display = 'block';
+      if (emptyState) {
+        emptyState.style.display = 'block';
+      }
+
       tbody.innerHTML = '';
       return;
     }
 
-    if (emptyState) emptyState.style.display = 'none';
+    if (emptyState) {
+      emptyState.style.display = 'none';
+    }
 
     tbody.innerHTML = historyList.map(item => {
       const dateStr = String(item.date || 'Unknown')
@@ -406,7 +452,7 @@ window.Predictions = {
       return `
         <tr>
           <td>
-            <span style="font-family: monospace; font-weight: 600; color: var(--accent-cyan);">
+            <span style="font-family: monospace; font-weight: 600; color: var(--accent-purple);">
               ${this.escapeHTML(item.id)}
             </span>
           </td>
@@ -472,19 +518,26 @@ window.Predictions = {
   addToHistory(entry) {
     let historyList = [];
 
-    const stored = localStorage.getItem('sentinel_analysis_history');
+    const stored = localStorage.getItem(
+      'sentinel_analysis_history'
+    );
 
     if (stored) {
       try {
         historyList = JSON.parse(stored);
-        if (!Array.isArray(historyList)) historyList = [];
+
+        if (!Array.isArray(historyList)) {
+          historyList = [];
+        }
       } catch (error) {
         historyList = [];
       }
     }
 
     if (historyList.length === 0 && window.DemoData) {
-      historyList = [...(window.DemoData.analysisHistory || [])];
+      historyList = [
+        ...(window.DemoData.analysisHistory || [])
+      ];
     }
 
     historyList.unshift(entry);

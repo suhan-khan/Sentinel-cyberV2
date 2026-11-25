@@ -1,3 +1,4 @@
+
 /**
  * Sentinel Cyber — Core Application Controller
  * Handles SPA navigation, API health checks, environment switching,
@@ -28,28 +29,40 @@ window.SentinelApp = {
   threatsFiltered: [],
   backendHealth: null,
 
+  // Safely escape dynamic values before inserting them into HTML.
+  escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[char]);
+  },
+
   async init() {
     if (window.Navigation) {
       window.Navigation.init();
     }
 
-    // Initialize dataset tables with demo fallback initially
+    // Initialize dataset tables with demo fallback initially.
     this.networkData = [...(window.DemoData ? window.DemoData.trafficRecords : [])];
     this.networkFiltered = [...this.networkData];
 
     this.threatsData = [...(window.DemoData ? window.DemoData.threatRecords : [])];
     this.threatsFiltered = [...this.threatsData];
 
-    // Check backend connection
+    // Check backend connection.
     if (window.ApiService) {
       this.backendHealth = await window.ApiService.checkHealth();
       const isLive = window.ApiService.isLiveMode();
       this.updateSystemStatus(isLive, this.backendHealth);
     }
 
-    // Initialize subsystems
+    // Initialize subsystems.
     if (window.Dashboard) {
       window.Dashboard.init();
+
       if (this.backendHealth) {
         window.Dashboard.renderSystemHealth(this.backendHealth);
       }
@@ -80,7 +93,10 @@ window.SentinelApp = {
 
     if (statusText && statusDot) {
       if (isLive) {
-        const featureInfo = health?.featureCount ? ` (${health.featureCount} Features)` : '';
+        const featureInfo = health?.featureCount
+          ? ` (${health.featureCount} Features)`
+          : '';
+
         statusText.innerText = `SOC Live Mode${featureInfo}`;
         statusDot.className = 'status-dot online';
       } else {
@@ -96,6 +112,7 @@ window.SentinelApp = {
     });
 
     const target = document.getElementById(`page-${pageId}`);
+
     if (target) {
       target.classList.add('active');
     }
@@ -105,6 +122,7 @@ window.SentinelApp = {
     }
 
     const titleEl = document.getElementById('page-title');
+
     if (titleEl && this.pageTitles[pageId]) {
       titleEl.innerText = this.pageTitles[pageId];
     }
@@ -131,24 +149,28 @@ window.SentinelApp = {
 
   setupGlobalControls() {
     const searchInput = document.getElementById('search-input');
+
     if (searchInput) {
       searchInput.addEventListener('input', e => {
         const val = e.target.value.trim().toLowerCase();
 
         if (this.currentPage === 'network') {
           const netSearch = document.getElementById('traffic-search');
+
           if (netSearch) {
             netSearch.value = val;
             this.filterNetworkData();
           }
         } else if (this.currentPage === 'threats') {
           const threatSearch = document.getElementById('threats-search');
+
           if (threatSearch) {
             threatSearch.value = val;
             this.filterThreatsData();
           }
         } else if (this.currentPage === 'predictions') {
           const predSearch = document.getElementById('predictions-search');
+
           if (predSearch && window.Predictions) {
             predSearch.value = val;
             window.Predictions.applyFilters();
@@ -158,6 +180,7 @@ window.SentinelApp = {
     }
 
     const notifBtn = document.getElementById('notification-btn');
+
     if (notifBtn) {
       notifBtn.addEventListener('click', () => {
         this.showNotification(
@@ -178,9 +201,11 @@ window.SentinelApp = {
     if (statusSelect) {
       statusSelect.addEventListener('change', () => this.filterNetworkData());
     }
+
     if (protocolSelect) {
       protocolSelect.addEventListener('change', () => this.filterNetworkData());
     }
+
     if (searchInput) {
       searchInput.addEventListener('input', () => this.filterNetworkData());
     }
@@ -199,7 +224,10 @@ window.SentinelApp = {
 
     if (nextBtn) {
       nextBtn.addEventListener('click', () => {
-        const total = Math.ceil(this.networkFiltered.length / this.networkPerPage) || 1;
+        const total = Math.ceil(
+          this.networkFiltered.length / this.networkPerPage
+        ) || 1;
+
         if (this.networkPage < total) {
           this.networkPage++;
           this.renderNetworkTable();
@@ -210,33 +238,56 @@ window.SentinelApp = {
     document.querySelectorAll('#traffic-table th.sortable').forEach(th => {
       th.addEventListener('click', () => {
         const field = th.getAttribute('data-sort');
-        if (field) this.sortNetworkData(field);
+
+        if (field) {
+          this.sortNetworkData(field);
+        }
       });
     });
   },
 
   filterNetworkData() {
-    const statusVal = (document.getElementById('traffic-filter-status')?.value || 'all').toLowerCase();
-    const protoVal = (document.getElementById('traffic-filter-protocol')?.value || 'all').toLowerCase();
-    const searchVal = (document.getElementById('traffic-search')?.value || '').trim().toLowerCase();
+    const statusVal = (
+      document.getElementById('traffic-filter-status')?.value || 'all'
+    ).toLowerCase();
+
+    const protoVal = (
+      document.getElementById('traffic-filter-protocol')?.value || 'all'
+    ).toLowerCase();
+
+    const searchVal = (
+      document.getElementById('traffic-search')?.value || ''
+    ).trim().toLowerCase();
 
     this.networkFiltered = this.networkData.filter(item => {
-      const classification = String(item.classification || '').toLowerCase();
+      const classification = String(
+        item.classification || ''
+      ).toLowerCase();
+
       let matchStatus = true;
 
       if (statusVal === 'normal') {
-        matchStatus = classification === 'normal' || classification === 'benign';
+        matchStatus =
+          classification === 'normal' ||
+          classification === 'benign';
       } else if (statusVal === 'malicious') {
-        matchStatus = classification !== 'normal' && classification !== 'benign';
+        matchStatus =
+          classification !== 'normal' &&
+          classification !== 'benign';
       }
 
-      const matchProto = protoVal === 'all' || String(item.protocol || '').toLowerCase() === protoVal;
+      const matchProto =
+        protoVal === 'all' ||
+        String(item.protocol || '').toLowerCase() === protoVal;
+
       const matchSearch = !searchVal || [
         item.srcIp,
         item.dstIp,
         item.classification,
         item.protocol
-      ].some(value => String(value || '').toLowerCase().includes(searchVal));
+      ].some(value =>
+        String(value || '').toLowerCase().includes(searchVal)
+      );
 
       return matchStatus && matchProto && matchSearch;
     });
@@ -247,7 +298,8 @@ window.SentinelApp = {
 
   sortNetworkData(field) {
     if (this.networkSort.field === field) {
-      this.networkSort.direction = this.networkSort.direction === 'asc' ? 'desc' : 'asc';
+      this.networkSort.direction =
+        this.networkSort.direction === 'asc' ? 'desc' : 'asc';
     } else {
       this.networkSort.field = field;
       this.networkSort.direction = 'asc';
@@ -260,11 +312,17 @@ window.SentinelApp = {
       let valA = a[f];
       let valB = b[f];
 
-      if (typeof valA === 'string') valA = valA.toLowerCase();
-      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (typeof valA === 'string') {
+        valA = valA.toLowerCase();
+      }
+
+      if (typeof valB === 'string') {
+        valB = valB.toLowerCase();
+      }
 
       if (valA < valB) return -1 * factor;
       if (valA > valB) return 1 * factor;
+
       return 0;
     });
 
@@ -273,15 +331,23 @@ window.SentinelApp = {
 
   renderNetworkPage() {
     const total = this.networkData.length;
-    const normal = this.networkData.filter(i => {
-      const c = String(i.classification || '').toLowerCase();
-      return c === 'normal' || c === 'benign';
+
+    const normal = this.networkData.filter(item => {
+      const classification = String(
+        item.classification || ''
+      ).toLowerCase();
+
+      return classification === 'normal' || classification === 'benign';
     }).length;
+
     const suspicious = total - normal;
 
     const setEl = (id, val) => {
       const el = document.getElementById(id);
-      if (el) el.innerText = val.toLocaleString();
+
+      if (el) {
+        el.innerText = val.toLocaleString();
+      }
     };
 
     setEl('network-total-value', total);
@@ -293,11 +359,19 @@ window.SentinelApp = {
 
   renderNetworkTable() {
     const tbody = document.getElementById('traffic-table-body');
+
     if (!tbody) return;
 
-    const totalPages = Math.ceil(this.networkFiltered.length / this.networkPerPage) || 1;
+    const totalPages = Math.ceil(
+      this.networkFiltered.length / this.networkPerPage
+    ) || 1;
+
     const start = (this.networkPage - 1) * this.networkPerPage;
-    const pageItems = this.networkFiltered.slice(start, start + this.networkPerPage);
+
+    const pageItems = this.networkFiltered.slice(
+      start,
+      start + this.networkPerPage
+    );
 
     if (pageItems.length === 0) {
       tbody.innerHTML = `
@@ -309,26 +383,61 @@ window.SentinelApp = {
       `;
     } else {
       tbody.innerHTML = pageItems.map(item => {
-        const c = String(item.classification || '').toLowerCase();
-        const isNormal = c === 'normal' || c === 'benign';
-        const timeStr = item.timestamp ? String(item.timestamp).replace('T', ' ').slice(11, 19) : 'N/A';
+        const classification = String(
+          item.classification || 'Unknown'
+        );
+
+        const c = classification.toLowerCase();
+
+        const isNormal =
+          c === 'normal' || c === 'benign';
+
+        const timeStr = item.timestamp
+          ? String(item.timestamp).replace('T', ' ').slice(11, 19)
+          : 'N/A';
+
         const confidence = Number(item.confidence);
-        const confPct = Number.isFinite(confidence) ? Math.round(confidence * 100) : 0;
+
+        const confPct = Number.isFinite(confidence)
+          ? Math.round(confidence * 100)
+          : 0;
 
         return `
           <tr>
-            <td style="color:var(--text-muted);font-family:monospace;">${timeStr}</td>
-            <td style="font-family:monospace; color:var(--accent-cyan);">${item.srcIp || 'N/A'}</td>
-            <td style="font-family:monospace;">${item.dstIp || 'N/A'}</td>
-            <td><span class="badge badge-info">${item.protocol || 'Unknown'}</span></td>
-            <td style="font-family:monospace;">${item.srcPort ?? 'N/A'}</td>
-            <td style="font-family:monospace;">${item.dstPort ?? 'N/A'}</td>
-            <td>${Number(item.packets || 0).toLocaleString()}</td>
+            <td style="color:var(--text-muted);font-family:monospace;">
+              ${this.escapeHTML(timeStr)}
+            </td>
+
+            <td style="font-family:monospace;color:var(--accent-purple);">
+              ${this.escapeHTML(item.srcIp || 'N/A')}
+            </td>
+
+            <td style="font-family:monospace;">
+              ${this.escapeHTML(item.dstIp || 'N/A')}
+            </td>
+
             <td>
-              <span class="badge ${isNormal ? 'badge-normal' : 'badge-critical'}">
-                ${item.classification || 'Unknown'}
+              <span class="badge badge-info">
+                ${this.escapeHTML(item.protocol || 'Unknown')}
               </span>
             </td>
+
+            <td style="font-family:monospace;">
+              ${this.escapeHTML(item.srcPort ?? 'N/A')}
+            </td>
+
+            <td style="font-family:monospace;">
+              ${this.escapeHTML(item.dstPort ?? 'N/A')}
+            </td>
+
+            <td>${Number(item.packets || 0).toLocaleString()}</td>
+
+            <td>
+              <span class="badge ${isNormal ? 'badge-normal' : 'badge-critical'}">
+                ${this.escapeHTML(classification)}
+              </span>
+            </td>
+
             <td>${confPct}%</td>
           </tr>
         `;
@@ -336,14 +445,22 @@ window.SentinelApp = {
     }
 
     const pageInfo = document.getElementById('traffic-page-info');
+
     if (pageInfo) {
-      pageInfo.innerText = `Page ${this.networkPage} of ${totalPages} (${this.networkFiltered.length} records)`;
+      pageInfo.innerText =
+        `Page ${this.networkPage} of ${totalPages} (${this.networkFiltered.length} records)`;
     }
 
     const prevBtn = document.getElementById('traffic-prev-btn');
     const nextBtn = document.getElementById('traffic-next-btn');
-    if (prevBtn) prevBtn.disabled = this.networkPage <= 1;
-    if (nextBtn) nextBtn.disabled = this.networkPage >= totalPages;
+
+    if (prevBtn) {
+      prevBtn.disabled = this.networkPage <= 1;
+    }
+
+    if (nextBtn) {
+      nextBtn.disabled = this.networkPage >= totalPages;
+    }
   },
 
   // ================= THREAT DETECTION =================
@@ -352,18 +469,37 @@ window.SentinelApp = {
     const sevSelect = document.getElementById('threats-filter-severity');
     const searchInput = document.getElementById('threats-search');
 
-    if (sevSelect) sevSelect.addEventListener('change', () => this.filterThreatsData());
-    if (searchInput) searchInput.addEventListener('input', () => this.filterThreatsData());
+    if (sevSelect) {
+      sevSelect.addEventListener('change', () => this.filterThreatsData());
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => this.filterThreatsData());
+    }
   },
 
   filterThreatsData() {
-    const sevVal = (document.getElementById('threats-filter-severity')?.value || 'all').toLowerCase();
-    const query = (document.getElementById('threats-search')?.value || '').trim().toLowerCase();
+    const sevVal = (
+      document.getElementById('threats-filter-severity')?.value || 'all'
+    ).toLowerCase();
+
+    const query = (
+      document.getElementById('threats-search')?.value || ''
+    ).trim().toLowerCase();
 
     this.threatsFiltered = this.threatsData.filter(t => {
-      const matchSev = sevVal === 'all' || String(t.severity || '').toLowerCase() === sevVal;
-      const matchQuery = !query || [t.threatType, t.srcIp, t.dstIp, t.details]
-        .some(value => String(value || '').toLowerCase().includes(query));
+      const matchSev =
+        sevVal === 'all' ||
+        String(t.severity || '').toLowerCase() === sevVal;
+
+      const matchQuery = !query || [
+        t.threatType,
+        t.srcIp,
+        t.dstIp,
+        t.details
+      ].some(value =>
+        String(value || '').toLowerCase().includes(query)
+      );
 
       return matchSev && matchQuery;
     });
@@ -373,13 +509,25 @@ window.SentinelApp = {
 
   renderThreatsPage() {
     const total = this.threatsData.length;
-    const critical = this.threatsData.filter(t => String(t.severity).toLowerCase() === 'critical').length;
-    const high = this.threatsData.filter(t => String(t.severity).toLowerCase() === 'high').length;
-    const medium = this.threatsData.filter(t => String(t.severity).toLowerCase() === 'medium').length;
+
+    const critical = this.threatsData.filter(
+      t => String(t.severity).toLowerCase() === 'critical'
+    ).length;
+
+    const high = this.threatsData.filter(
+      t => String(t.severity).toLowerCase() === 'high'
+    ).length;
+
+    const medium = this.threatsData.filter(
+      t => String(t.severity).toLowerCase() === 'medium'
+    ).length;
 
     const setEl = (id, val) => {
       const el = document.getElementById(id);
-      if (el) el.innerText = val.toString();
+
+      if (el) {
+        el.innerText = val.toString();
+      }
     };
 
     setEl('threats-total-value', total);
@@ -389,7 +537,13 @@ window.SentinelApp = {
 
     if (window.Charts) {
       window.Charts.createAttackTypesChart('attack-types-chart', {
-        labels: ['DoS Attacks', 'DDoS Floods', 'Host Probes', 'Brute Force Auth', 'Code Exploits'],
+        labels: [
+          'DoS Attacks',
+          'DDoS Floods',
+          'Host Probes',
+          'Brute Force Auth',
+          'Code Exploits'
+        ],
         values: [18, 14, 10, 6, 2]
       });
 
@@ -403,6 +557,7 @@ window.SentinelApp = {
 
   renderThreatsTable() {
     const tbody = document.getElementById('threats-table-body');
+
     if (!tbody) return;
 
     if (this.threatsFiltered.length === 0) {
@@ -413,24 +568,67 @@ window.SentinelApp = {
           </td>
         </tr>
       `;
+
       return;
     }
 
     tbody.innerHTML = this.threatsFiltered.map(t => {
-      const severity = String(t.severity || 'medium');
-      const timeStr = t.timestamp ? String(t.timestamp).replace('T', ' ').slice(5, 19) : 'N/A';
+      const severity = String(t.severity || 'medium').toLowerCase();
+
+      const allowedSeverities = [
+        'critical',
+        'high',
+        'medium',
+        'low'
+      ];
+
+      const severityClass = allowedSeverities.includes(severity)
+        ? severity
+        : 'medium';
+
+      const timeStr = t.timestamp
+        ? String(t.timestamp).replace('T', ' ').slice(5, 19)
+        : 'N/A';
+
       const confidence = Number(t.confidence);
-      const confPct = Number.isFinite(confidence) ? Math.round(confidence * 100) : 0;
+
+      const confPct = Number.isFinite(confidence)
+        ? Math.round(confidence * 100)
+        : 0;
+
+      const isActive = String(t.status || 'Active').toLowerCase() === 'active';
 
       return `
         <tr>
-          <td style="font-family:monospace; color:var(--text-muted);">${timeStr}</td>
-          <td style="font-weight:600; color:var(--accent-cyan);">${t.threatType || 'Adversarial Flow'}</td>
-          <td style="font-family:monospace;">${t.srcIp || 'N/A'}</td>
-          <td style="font-family:monospace;">${t.dstIp || 'N/A'}</td>
-          <td><span class="badge badge-${severity.toLowerCase()}">${severity}</span></td>
+          <td style="font-family:monospace;color:var(--text-muted);">
+            ${this.escapeHTML(timeStr)}
+          </td>
+
+          <td style="font-weight:600;color:var(--accent-purple);">
+            ${this.escapeHTML(t.threatType || 'Adversarial Flow')}
+          </td>
+
+          <td style="font-family:monospace;">
+            ${this.escapeHTML(t.srcIp || 'N/A')}
+          </td>
+
+          <td style="font-family:monospace;">
+            ${this.escapeHTML(t.dstIp || 'N/A')}
+          </td>
+
+          <td>
+            <span class="badge badge-${severityClass}">
+              ${this.escapeHTML(severity)}
+            </span>
+          </td>
+
           <td>${confPct}%</td>
-          <td><span class="badge ${t.status === 'Active' ? 'badge-critical' : 'badge-normal'}">${t.status || 'Active'}</span></td>
+
+          <td>
+            <span class="badge ${isActive ? 'badge-critical' : 'badge-normal'}">
+              ${this.escapeHTML(t.status || 'Active')}
+            </span>
+          </td>
         </tr>
       `;
     }).join('');
@@ -442,6 +640,7 @@ window.SentinelApp = {
     if (!window.Charts) return;
 
     let ad = null;
+
     if (window.ApiService && window.ApiService.isLiveMode()) {
       ad = await window.ApiService.getAnalytics();
     }
@@ -453,18 +652,33 @@ window.SentinelApp = {
     if (!ad) return;
 
     if (ad.protocolDistribution) {
-      window.Charts.createProtocolDistributionChart('protocol-distribution-chart', ad.protocolDistribution);
+      window.Charts.createProtocolDistributionChart(
+        'protocol-distribution-chart',
+        ad.protocolDistribution
+      );
     }
+
     if (ad.trafficTrend) {
-      window.Charts.createTrafficTrendChart('traffic-trend-chart', ad.trafficTrend);
+      window.Charts.createTrafficTrendChart(
+        'traffic-trend-chart',
+        ad.trafficTrend
+      );
     }
-    window.Charts.createNormalVsMaliciousChart('normal-vs-malicious-chart', {
-      labels: ['Latest Dataset Session'],
-      normal: [ad.normalConnections || 23554],
-      malicious: [ad.maliciousDetected || 1293]
-    });
+
+    window.Charts.createNormalVsMaliciousChart(
+      'normal-vs-malicious-chart',
+      {
+        labels: ['Latest Dataset Session'],
+        normal: [ad.normalConnections || 23554],
+        malicious: [ad.maliciousDetected || 1293]
+      }
+    );
+
     if (ad.detectionStats) {
-      window.Charts.createDetectionStatsChart('detection-stats-chart', ad.detectionStats);
+      window.Charts.createDetectionStatsChart(
+        'detection-stats-chart',
+        ad.detectionStats
+      );
     }
   },
 
@@ -485,36 +699,58 @@ window.SentinelApp = {
       apiInput.value = window.ApiService.API_BASE_URL;
     }
 
-    if (btnLocal && apiInput) {
+    if (btnLocal && apiInput && window.ApiService) {
       btnLocal.addEventListener('click', () => {
         apiInput.value = 'http://localhost:8000';
+
         window.ApiService.setApiUrl('http://localhost:8000');
-        this.showNotification('API preset set to Localhost (http://localhost:8000)', 'info');
+
+        this.showNotification(
+          'API preset set to Localhost (http://localhost:8000)',
+          'info'
+        );
       });
     }
 
-    if (btnRender && apiInput) {
-  btnRender.addEventListener('click', () => {
-    const renderUrl = 'https://sentinel-cyber-backend-jntd.onrender.com';
+    if (btnRender && apiInput && window.ApiService) {
+      btnRender.addEventListener('click', () => {
+        const renderUrl =
+          'https://sentinel-cyber-backend-jntd.onrender.com';
 
-    apiInput.value = renderUrl;
-    window.ApiService.setApiUrl(renderUrl);
+        apiInput.value = renderUrl;
+        window.ApiService.setApiUrl(renderUrl);
 
-    this.showNotification('API preset set to Sentinel Cyber V2 Render Backend', 'success');
-  });
-}
+        this.showNotification(
+          'API preset set to Sentinel Cyber V2 Render Backend',
+          'success'
+        );
+      });
+    }
 
-    if (btnReset && apiInput) {
+    if (btnReset && apiInput && window.ApiService) {
       btnReset.addEventListener('click', () => {
         const defaultUrl = window.ApiService.resetToDefaultUrl();
+
         apiInput.value = defaultUrl;
-        this.showNotification(`Reset API URL to environment default: ${defaultUrl}`, 'info');
+
+        this.showNotification(
+          `Reset API URL to environment default: ${defaultUrl}`,
+          'info'
+        );
       });
     }
 
     if (testBtn) {
       testBtn.addEventListener('click', async () => {
-        const url = apiInput ? apiInput.value.trim() : 'http://localhost:8000';
+        if (!window.ApiService) {
+          this.showNotification('API service is unavailable.', 'error');
+          return;
+        }
+
+        const url = apiInput
+          ? apiInput.value.trim()
+          : 'http://localhost:8000';
+
         window.ApiService.setApiUrl(url);
 
         testBtn.disabled = true;
@@ -522,23 +758,41 @@ window.SentinelApp = {
 
         if (resultBox) {
           resultBox.style.display = 'block';
-          resultBox.style.background = 'rgba(0, 229, 255, 0.1)';
-          resultBox.style.color = 'var(--accent-cyan)';
+          resultBox.style.background = 'rgba(167, 139, 250, 0.10)';
+          resultBox.style.color = 'var(--accent-purple)';
           resultBox.innerText = `Connecting to ${url}/api/health ...`;
         }
 
-        const health = await window.ApiService.checkHealth();
+        let health;
+
+        try {
+          health = await window.ApiService.checkHealth();
+        } catch (error) {
+          health = {
+            error: error.message || 'Connection request failed.'
+          };
+        }
+
         this.backendHealth = health;
+
         const isLive = window.ApiService.isLiveMode();
 
         this.updateSystemStatus(isLive, health);
+
         if (window.Dashboard) {
           window.Dashboard.renderSystemHealth(health);
         }
 
         testBtn.disabled = false;
+
         testBtn.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <svg xmlns="http://www.w3.org/2000/svg"
+            width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
           Test Connection
         `;
 
@@ -547,20 +801,35 @@ window.SentinelApp = {
             resultBox.style.background = 'rgba(16, 185, 129, 0.15)';
             resultBox.style.color = '#34D399';
             resultBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+
             resultBox.innerHTML = `
               <strong>Connection Successful!</strong><br>
-              Status: FastAPI Online | Model: ${health.model?.detail || 'Loaded'} | Decision Threshold: ${health.threshold ?? 0.05}
+              Status: FastAPI Online |
+              Model: ${this.escapeHTML(health.model?.detail || 'Loaded')} |
+              Decision Threshold: ${this.escapeHTML(health.threshold ?? 0.05)}
             `;
-            this.showNotification('Successfully connected to FastAPI backend!', 'success');
+
+            this.showNotification(
+              'Successfully connected to FastAPI backend!',
+              'success'
+            );
           } else {
             resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
             resultBox.style.color = '#F87171';
             resultBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+
             resultBox.innerHTML = `
-              <strong>Backend Unreachable at ${url}</strong><br>
-              ${health.error || 'Ensure FastAPI server is running (uvicorn main:app) and CORS is allowed.'}
+              <strong>Backend Unreachable at ${this.escapeHTML(url)}</strong><br>
+              ${this.escapeHTML(
+                health.error ||
+                'Ensure FastAPI server is running (uvicorn main:app) and CORS is allowed.'
+              )}
             `;
-            this.showNotification('Backend unreachable. Running in Demo Mode.', 'warning');
+
+            this.showNotification(
+              'Backend unreachable. Running in Demo Mode.',
+              'warning'
+            );
           }
         }
       });
@@ -568,10 +837,14 @@ window.SentinelApp = {
 
     if (saveBtn) {
       saveBtn.addEventListener('click', () => {
-        if (apiInput) {
+        if (apiInput && window.ApiService) {
           window.ApiService.setApiUrl(apiInput.value.trim());
         }
-        this.showNotification('Configuration saved successfully.', 'success');
+
+        this.showNotification(
+          'Configuration saved successfully.',
+          'success'
+        );
       });
     }
 
@@ -590,21 +863,27 @@ window.SentinelApp = {
 
   showNotification(message, type = 'info') {
     const validTypes = ['success', 'error', 'warning', 'info'];
-    const safeType = validTypes.includes(type) ? type : 'info';
+
+    const safeType = validTypes.includes(type)
+      ? type
+      : 'info';
 
     const configs = {
       success: {
         title: 'Operation Successful',
         icon: '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>'
       },
+
       error: {
         title: 'Operation Failed',
         icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6m0-6l6 6"/></svg>'
       },
+
       warning: {
         title: 'Security Alert',
         icon: '<svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.7 3.86a2 2 0 00-3.4 0z"/></svg>'
       },
+
       info: {
         title: 'System Notification',
         icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>'
@@ -612,14 +891,17 @@ window.SentinelApp = {
     };
 
     let container = document.getElementById('notification-container');
+
     if (!container) {
       container = document.createElement('div');
       container.id = 'notification-container';
       container.className = 'notification-toast-container';
+
       document.body.appendChild(container);
     }
 
     const config = configs[safeType];
+
     const toast = document.createElement('div');
     toast.className = `notification-toast ${safeType}`;
 
@@ -650,16 +932,24 @@ window.SentinelApp = {
     container.appendChild(toast);
 
     let dismissed = false;
+
     const timer = setTimeout(dismiss, 4500);
 
     function dismiss() {
       if (dismissed) return;
+
       dismissed = true;
+
       clearTimeout(timer);
+
       toast.classList.add('removing');
+
       setTimeout(() => {
         toast.remove();
-        if (container.children.length === 0) container.remove();
+
+        if (container.children.length === 0) {
+          container.remove();
+        }
       }, 260);
     }
 

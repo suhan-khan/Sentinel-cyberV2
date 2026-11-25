@@ -1,6 +1,6 @@
 
 /**
- * Sentinel Cyber — Dashboard Overview Controller
+ * Sentinel Cyber V2 — Dashboard Overview Controller
  * Manages overview KPIs, live host telemetry streams, security alerts feed,
  * subsystem health diagnostics, and Chart.js visualizations.
  */
@@ -30,6 +30,7 @@ window.Dashboard = {
         normalConnections: 0,
         detectionRate: 0
       });
+
       this.renderAlerts([]);
     }
 
@@ -37,7 +38,7 @@ window.Dashboard = {
     this.setupTimeFilters();
     this.setupTelemetrySyncBtn();
 
-    // Initial subsystem health will be rendered by SentinelApp.
+    // Initial subsystem health is rendered by SentinelApp.
     // Live sensor status is exclusively controlled by telemetry polling.
     this.startSensorPolling();
   },
@@ -80,21 +81,31 @@ window.Dashboard = {
     if (!telemetry) return;
 
     const status = telemetry.status || 'offline';
+
     const isOnline = status === 'online';
     const isStale = status === 'stale';
     const isDemo = status === 'demo';
 
-    const statusBadge = document.getElementById('sensor-status-badge');
-    const statusDot = document.getElementById('sensor-status-dot');
-    const statusText = document.getElementById('sensor-status-text');
-    const lastUpdated = document.getElementById('sensor-last-updated');
+    const statusBadge =
+      document.getElementById('sensor-status-badge');
+
+    const statusDot =
+      document.getElementById('sensor-status-dot');
+
+    const statusText =
+      document.getElementById('sensor-status-text');
+
+    const lastUpdated =
+      document.getElementById('sensor-last-updated');
 
     if (statusBadge) {
-      statusBadge.className = `telemetry-badge ${isDemo ? 'stale' : status}`;
+      statusBadge.className =
+        `telemetry-badge ${isDemo ? 'stale' : status}`;
     }
 
     if (statusDot) {
-      statusDot.className = `status-dot ${isDemo ? 'stale' : status}`;
+      statusDot.className =
+        `status-dot ${isDemo ? 'stale' : status}`;
     }
 
     if (statusText) {
@@ -112,7 +123,12 @@ window.Dashboard = {
 
     if (lastUpdated) {
       if (telemetry.last_seen) {
-        const timeStr = new Date(telemetry.last_seen).toLocaleTimeString();
+        const lastSeenDate = new Date(telemetry.last_seen);
+
+        const timeStr = Number.isNaN(lastSeenDate.getTime())
+          ? 'Unknown'
+          : lastSeenDate.toLocaleTimeString();
+
         const age = telemetry.age_seconds != null
           ? `${telemetry.age_seconds}s ago`
           : 'just now';
@@ -125,11 +141,16 @@ window.Dashboard = {
       }
     }
 
-    // Device and interface
-    const devEl = document.getElementById('sensor-device');
-    const ifaceEl = document.getElementById('sensor-interface');
+    // Device and interface.
+    const devEl =
+      document.getElementById('sensor-device');
 
-    if (devEl) devEl.innerText = telemetry.device || '--';
+    const ifaceEl =
+      document.getElementById('sensor-interface');
+
+    if (devEl) {
+      devEl.innerText = telemetry.device || '--';
+    }
 
     if (ifaceEl) {
       ifaceEl.innerText = telemetry.interface
@@ -137,7 +158,7 @@ window.Dashboard = {
         : 'No active interface';
     }
 
-    // Throughput
+    // Throughput.
     const formatSpeed = (kbps) => {
       const val = Number(kbps) || 0;
 
@@ -175,11 +196,13 @@ window.Dashboard = {
       document.getElementById('sensor-bytes-recv');
 
     if (upSpeedEl) {
-      upSpeedEl.innerText = formatSpeed(telemetry.upload_kbps);
+      upSpeedEl.innerText =
+        formatSpeed(telemetry.upload_kbps);
     }
 
     if (downSpeedEl) {
-      downSpeedEl.innerText = formatSpeed(telemetry.download_kbps);
+      downSpeedEl.innerText =
+        formatSpeed(telemetry.download_kbps);
     }
 
     if (bytesSentEl) {
@@ -192,7 +215,7 @@ window.Dashboard = {
         formatBytes(telemetry.bytes_received_total);
     }
 
-    // Socket statistics
+    // Socket statistics.
     const conns = telemetry.connections || {
       total: 0,
       tcp: 0,
@@ -258,13 +281,15 @@ window.Dashboard = {
           : 'var(--color-danger)';
 
       healthSensorEl.innerHTML = `
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="color:var(--text-secondary); font-size:0.78rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="color:var(--text-secondary);font-size:0.78rem;">
             Live Network Sensor
           </span>
+
           <span class="status-dot ${healthClass}"></span>
         </div>
-        <div style="font-weight:600; font-size:0.88rem; margin-top:4px; color:${healthColor};">
+
+        <div style="font-weight:600;font-size:0.88rem;margin-top:4px;color:${healthColor};">
           ${this.escapeHTML(healthLabel)}
         </div>
       `;
@@ -272,7 +297,8 @@ window.Dashboard = {
   },
 
   setupTelemetrySyncBtn() {
-    const btn = document.getElementById('btn-refresh-telemetry');
+    const btn =
+      document.getElementById('btn-refresh-telemetry');
 
     if (btn) {
       btn.addEventListener('click', async () => {
@@ -303,12 +329,16 @@ window.Dashboard = {
     this.liveStats = stats || null;
 
     const total = predictions.length;
-    const normal =
-      predictions.filter(item => this.isNormal(item)).length;
+
+    const normal = predictions.filter(
+      item => this.isNormal(item)
+    ).length;
 
     const malicious = total - normal;
-    const detectionRate =
-      total > 0 ? (malicious / total) * 100 : 0;
+
+    const detectionRate = total > 0
+      ? (malicious / total) * 100
+      : 0;
 
     this.updateStats({
       totalConnections: stats?.total ?? total,
@@ -385,16 +415,22 @@ window.Dashboard = {
 
   animateValue(elementId, start, end, duration, suffix = '') {
     const obj = document.getElementById(elementId);
+
     if (!obj) return;
 
     let startTimestamp = null;
+
     const isFloat = Number(end) % 1 !== 0;
 
     const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
+      if (!startTimestamp) {
+        startTimestamp = timestamp;
+      }
 
-      const progress =
-        Math.min((timestamp - startTimestamp) / duration, 1);
+      const progress = Math.min(
+        (timestamp - startTimestamp) / duration,
+        1
+      );
 
       const current =
         progress * (end - start) + start;
@@ -448,9 +484,9 @@ window.Dashboard = {
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        buttons.forEach(button =>
-          button.classList.remove('active')
-        );
+        buttons.forEach(button => {
+          button.classList.remove('active');
+        });
 
         btn.classList.add('active');
 
@@ -477,7 +513,8 @@ window.Dashboard = {
   },
 
   getFilteredTrafficData(range) {
-    const analytics = window.DemoData?.analyticsData;
+    const analytics =
+      window.DemoData?.analyticsData;
 
     const base = analytics?.trafficTrend || {
       labels: [],
@@ -487,7 +524,14 @@ window.Dashboard = {
 
     if (range === '1h') {
       return {
-        labels: ['14:00', '14:10', '14:20', '14:30', '14:40', '14:50'],
+        labels: [
+          '14:00',
+          '14:10',
+          '14:20',
+          '14:30',
+          '14:40',
+          '14:50'
+        ],
         normal: [420, 480, 510, 460, 490, 530],
         suspicious: [28, 35, 22, 19, 31, 24]
       };
@@ -495,7 +539,14 @@ window.Dashboard = {
 
     if (range === '6h') {
       return {
-        labels: ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00'],
+        labels: [
+          '09:00',
+          '10:00',
+          '11:00',
+          '12:00',
+          '13:00',
+          '14:00'
+        ],
         normal: [2100, 2600, 2750, 2900, 3100, 2850],
         suspicious: [130, 160, 145, 185, 210, 165]
       };
@@ -503,9 +554,33 @@ window.Dashboard = {
 
     if (range === '7d') {
       return {
-        labels: ['Nov 17', 'Nov 18', 'Nov 19', 'Nov 20', 'Nov 21', 'Nov 22', 'Nov 23'],
-        normal: [21400, 22100, 20800, 24500, 23900, 24100, 23554],
-        suspicious: [1120, 1080, 950, 1310, 1260, 1340, 1293]
+        labels: [
+          'Nov 17',
+          'Nov 18',
+          'Nov 19',
+          'Nov 20',
+          'Nov 21',
+          'Nov 22',
+          'Nov 23'
+        ],
+        normal: [
+          21400,
+          22100,
+          20800,
+          24500,
+          23900,
+          24100,
+          23554
+        ],
+        suspicious: [
+          1120,
+          1080,
+          950,
+          1310,
+          1260,
+          1340,
+          1293
+        ]
       };
     }
 
@@ -521,11 +596,12 @@ window.Dashboard = {
     if (!alerts || alerts.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="6" class="text-center text-muted" style="padding: 28px; font-size: 0.85rem;">
+          <td colspan="6" class="text-center text-muted" style="padding:28px;font-size:0.85rem;">
             No active threat alerts in this session. Upload a packet capture CSV or click "Load Included Sample Dataset" to run intrusion detection.
           </td>
         </tr>
       `;
+
       return;
     }
 
@@ -533,8 +609,17 @@ window.Dashboard = {
       const severity =
         String(alert.severity || 'Medium');
 
-      const sevClass =
-        `badge-${severity.toLowerCase()}`;
+      const allowedSeverities = [
+        'critical',
+        'high',
+        'medium',
+        'low'
+      ];
+
+      const severityClass =
+        allowedSeverities.includes(severity.toLowerCase())
+          ? `badge-${severity.toLowerCase()}`
+          : 'badge-medium';
 
       const timestamp =
         alert.timestamp ? new Date(alert.timestamp) : null;
@@ -552,30 +637,38 @@ window.Dashboard = {
           ? 'badge-normal'
           : 'badge-critical';
 
+      const alertId = Number(alert.id) || 1;
+
       return `
         <tr>
-          <td style="font-family: monospace; color: var(--text-muted);">
+          <td style="font-family:monospace;color:var(--text-muted);">
             ${this.escapeHTML(timeStr)}
           </td>
-          <td style="font-family: monospace; color: var(--accent-cyan);">
+
+          <td style="font-family:monospace;color:var(--accent-purple);">
             ${this.escapeHTML(alert.srcIp || 'N/A')}
           </td>
-          <td style="font-family: monospace;">
+
+          <td style="font-family:monospace;">
             ${this.escapeHTML(alert.dstIp || 'N/A')}
           </td>
+
           <td>
             <span class="badge ${classificationClass}">
               ${this.escapeHTML(classification)}
             </span>
           </td>
+
           <td>
-            <span class="badge ${sevClass}">
+            <span class="badge ${severityClass}">
               ${this.escapeHTML(severity)}
             </span>
           </td>
+
           <td>
-            <button class="btn btn-secondary btn-sm"
-              onclick="window.SentinelApp.showNotification('Alert incident ${Number(alert.id) || 1} flagged for review.', 'info')">
+            <button
+              class="btn btn-secondary btn-sm"
+              onclick="window.SentinelApp.showNotification('Alert incident ${alertId} flagged for review.', 'info')">
               Investigate
             </button>
           </td>
@@ -599,25 +692,30 @@ window.Dashboard = {
 
     const setHealthItem = (id, data, fallbackLabel) => {
       const el = document.getElementById(id);
+
       if (!el) return;
 
       const isOnline =
-        data && (data.status === 'online' ||
-          data.status === 'ready');
+        data && (
+          data.status === 'online' ||
+          data.status === 'ready'
+        );
 
       const isStale =
         data && data.status === 'stale';
 
       el.innerHTML = `
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="color:var(--text-secondary); font-size:0.78rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="color:var(--text-secondary);font-size:0.78rem;">
             ${this.escapeHTML(data?.label || fallbackLabel)}
           </span>
+
           <span class="status-dot ${
             isOnline ? 'online' : isStale ? 'stale' : 'offline'
           }"></span>
         </div>
-        <div style="font-weight:600; font-size:0.88rem; margin-top:4px; color:${
+
+        <div style="font-weight:600;font-size:0.88rem;margin-top:4px;color:${
           isOnline
             ? 'var(--text-primary)'
             : isStale
@@ -647,7 +745,6 @@ window.Dashboard = {
       'Dataset Processor'
     );
 
-    // Do not render health.sensor here.
     // The sensor indicator is updated only by updateSensorUI().
   }
 };

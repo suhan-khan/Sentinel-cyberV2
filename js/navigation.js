@@ -1,7 +1,9 @@
+
 /**
  * Sentinel Cyber — Navigation Controller
  * Handles sidebar toggling, active states, page routing, and mobile responsiveness.
  */
+
 window.Navigation = {
   isMobileOpen: false,
   isCollapsed: false,
@@ -9,12 +11,16 @@ window.Navigation = {
   init() {
     // 1. Navigation item clicks
     const navItems = document.querySelectorAll('.nav-item');
+
     navItems.forEach(item => {
       item.addEventListener('click', (e) => {
         e.preventDefault();
+
         const pageId = item.getAttribute('data-page');
+
         if (pageId && window.SentinelApp) {
           window.SentinelApp.navigateTo(pageId);
+
           if (this.isMobileOpen) {
             this.closeMobileSidebar();
           }
@@ -24,6 +30,7 @@ window.Navigation = {
 
     // 2. Sidebar collapse toggle
     const toggleBtn = document.getElementById('sidebar-toggle');
+
     if (toggleBtn) {
       toggleBtn.addEventListener('click', () => {
         if (window.innerWidth <= 992) {
@@ -36,6 +43,7 @@ window.Navigation = {
 
     // 3. Mobile overlay click
     const mobileOverlay = document.getElementById('mobile-overlay');
+
     if (mobileOverlay) {
       mobileOverlay.addEventListener('click', () => {
         this.closeMobileSidebar();
@@ -50,7 +58,10 @@ window.Navigation = {
     });
 
     // 5. Restore collapsed state
-    const savedCollapse = localStorage.getItem('sentinel_sidebar_collapsed');
+    const savedCollapse = localStorage.getItem(
+      'sentinel_sidebar_collapsed'
+    );
+
     if (savedCollapse === 'true' && window.innerWidth > 992) {
       this.collapseSidebar(true);
     }
@@ -58,34 +69,58 @@ window.Navigation = {
 
   setActive(pageId) {
     const navItems = document.querySelectorAll('.nav-item');
+
     navItems.forEach(item => {
-      if (item.getAttribute('data-page') === pageId) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
+      const isActive = item.getAttribute('data-page') === pageId;
+
+      item.classList.toggle('active', isActive);
     });
   },
 
   toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
-    const mainWrapper = document.querySelector('.main-wrapper') || document.querySelector('.main-content');
-    
+
+    const mainWrapper =
+      document.querySelector('.main-wrapper') ||
+      document.querySelector('.main-content');
+
+    if (!sidebar) return;
+
     this.isCollapsed = !this.isCollapsed;
+
     sidebar.classList.toggle('collapsed', this.isCollapsed);
+
     if (mainWrapper) {
-      mainWrapper.classList.toggle('sidebar-collapsed', this.isCollapsed);
+      mainWrapper.classList.toggle(
+        'sidebar-collapsed',
+        this.isCollapsed
+      );
     }
-    localStorage.setItem('sentinel_sidebar_collapsed', this.isCollapsed);
+
+    localStorage.setItem(
+      'sentinel_sidebar_collapsed',
+      String(this.isCollapsed)
+    );
   },
 
   collapseSidebar(collapsed) {
     const sidebar = document.getElementById('sidebar');
-    const mainWrapper = document.querySelector('.main-wrapper') || document.querySelector('.main-content');
-    this.isCollapsed = collapsed;
-    sidebar.classList.toggle('collapsed', collapsed);
+
+    const mainWrapper =
+      document.querySelector('.main-wrapper') ||
+      document.querySelector('.main-content');
+
+    if (!sidebar) return;
+
+    this.isCollapsed = Boolean(collapsed);
+
+    sidebar.classList.toggle('collapsed', this.isCollapsed);
+
     if (mainWrapper) {
-      mainWrapper.classList.toggle('sidebar-collapsed', collapsed);
+      mainWrapper.classList.toggle(
+        'sidebar-collapsed',
+        this.isCollapsed
+      );
     }
   },
 
@@ -100,18 +135,34 @@ window.Navigation = {
   openMobileSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
+
+    if (!sidebar) return;
+
     sidebar.classList.add('mobile-open');
-    if (overlay) overlay.classList.add('active');
+
+    if (overlay) {
+      overlay.classList.add('active');
+    }
+
     document.body.style.overflow = 'hidden';
+
     this.isMobileOpen = true;
   },
 
   closeMobileSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
-    sidebar.classList.remove('mobile-open');
-    if (overlay) overlay.classList.remove('active');
+
+    if (sidebar) {
+      sidebar.classList.remove('mobile-open');
+    }
+
+    if (overlay) {
+      overlay.classList.remove('active');
+    }
+
     document.body.style.overflow = '';
+
     this.isMobileOpen = false;
   }
 };
